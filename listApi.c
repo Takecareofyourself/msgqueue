@@ -1,10 +1,6 @@
+#include "listApi.h"
 
-#include "msgqueue.h"
-#include <stdio.h>
-#include <string.h>
-
-#include <stdlib.h>
-
+#if 0
 #define __compiler_offsetof(a,b) __builtin_offsetof(a,b)
  
 #undef offsetof
@@ -17,90 +13,46 @@
 #define container_of(ptr, type, member) ({      \
     const typeof( ((type *)0)->member ) *__mptr = (ptr);    \
     (type *)( (char *)__mptr - offsetof(type,member) );})
+#endif
 
-
-void free_msg(struct list *ptr)
+/*
+参数head：为链表的头head
+参数next：为链表的头head.next所指向的地址，即head的后一个链表节点
+*/
+void Add_Front(struct list *New,struct list *head,struct list *next)
 {
-	msgq_t *p = container_of(ptr, msgq_t, list);
-	free(p->msg);
-	p->msg = NULL;
-	free(p);
-	p = NULL;
-}
-
-struct list * malloc_msg(char *msg)
-{
-	if(NULL == msg)
-	{
-		return NULL;
-	}
-	int len = strlen(msg);
-	msgq_t *onemsg = (msgq_t *)malloc(sizeof(msgq_t));
-	if(NULL == onemsg)
-	{
-		printf("msg is nill\n");
-		return NULL;
-	}
-	onemsg->list.next = NULL;
-	onemsg->list.prv = NULL;
-	char *onestr = (char *)malloc(len+1);
-	if(NULL == onestr)
-	{
-		printf("str is nill\n");
-		return NULL;
-	}
-	strcpy(onestr,msg);
-	onestr[len+1] = 0;
-	onemsg->msg = onestr;
-	return &onemsg->list;
+	New->next = head->next;
+	head->next = New;
+	next->prv = New;
+	New->prv = head;
 }
 
 /*
-参数1-head：链表的头
-参数2-prv：链表的头的next;
+参数head：为链表的头head
+参数next：为链表的头head.prv所指向的地址，即head的前一个链表节点
 */
-void Insert_Front(char * msg, struct list * head, struct list * next)
+void Add_Tail(struct list *New,struct list *head,struct list *prv)
 {
-	struct list *tmp = malloc_msg(msg);
-	Add_Front(tmp,head,next);
-}
-
-
-/*
-参数1-head：链表的头
-参数2-prv：链表的头的prv
-*/
-void Insert_Tail(char * msg, struct list * head, struct list * next)
-{
-	struct list *tmp = malloc_msg(msg);
-	Add_Tail(tmp,head,next);
+	
+	New->prv = head->prv;
+	head->prv = New;
+	prv->next = New;
+	New->next = head;
 }
 
 /*
-参数1-head：链表的头
-参数2-prv：链表的头的prv
+参数head：为链表的头head
+参数next：为链表的头head.prv所指向的地址，即head的前一个链表节点
 */
-void Drop_Tail(struct list *head, struct list *prv)
+void Del_Tail(struct list *head, struct list *prv)
 {
-	struct list *tmp = prv;
-	Del_Tail(head,prv);
-	free_msg(tmp);
+	prv->prv->next = head;
+	head->prv = prv->prv;
 }
 
-void Foreach_Ele(struct list *head)
+void Init_head(struct list *head)
 {
-	struct list *tmp = head->next;
-
-	do
-	{
-		msgq_t *p = container_of(tmp, msgq_t, list);
-		printf("%s\n",p->msg);
-		tmp = tmp->next;
-	}while(tmp != head);
-
+	head->next = head;
+	head->prv = head;
 }
 
-void Init_Listhead(struct list *head)
-{
-	Init_head(head);
-}
