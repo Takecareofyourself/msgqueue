@@ -7,10 +7,10 @@ CFLAGS = -g
 INC = -I./ -I../
  
 #指定要链接的动态库或静态库 -L是指定动态库路径，非标准的动态库需要此参数
-LIBS = 
+LIBS = -lpthread 
  
 #把上面放一起
-CXXFLAGS = ${CFLAGS} ${INC} ${LIBS}
+CXXFLAGS = ${CFLAGS} ${INC} 
  
 #指定生成可执行文件名称
 EXEC = msg
@@ -20,7 +20,7 @@ OBJS = test.o ../listApi.o ../msgqueue.o
  
 #make执行动作
 ${EXEC} : ${OBJS}
-	${CC} -o $@ $^
+	${CC} -o $@ $^ $(LIBS)
  
  
 #make clean动作
@@ -29,5 +29,5 @@ clean:
  
 #中间文件的生成
 %.o:%.c
-	$(CC) $(CXXFLAGS) -o $@ -c $<
+	$(CC) $(CXXFLAGS) -o $@ -c $< 
 

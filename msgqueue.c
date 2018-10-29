@@ -49,7 +49,7 @@ static struct list * malloc_msg(char *msg)
 int GetFront_Drop(struct list *head,char *msg,int len)
 {
 	struct list *tmp = head->next;
-	if(tmp == head)
+	if(Check_List(head))
 		return -1;
 
 	msgq_t *p = container_of(tmp, msgq_t,list);
@@ -89,7 +89,7 @@ void Insert_Tail(char * msg, struct list * head)
 int GetTail_Drop(struct list *head,char *msg,int len)
 {
 	struct list *tmp = head->prv;
-	if(tmp == head)
+	if(Check_List(head))
 		return -1;
 	
 	msgq_t *p = container_of(tmp,msgq_t,list);
