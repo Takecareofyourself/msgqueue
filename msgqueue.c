@@ -59,10 +59,10 @@ struct list * malloc_msg(char *msg)
 参数1-head：链表的头
 参数2-prv：链表的头的next;
 */
-void Insert_Front(char * msg, struct list * head, struct list * next)
+void Insert_Front(char * msg, struct list * head)
 {
 	struct list *tmp = malloc_msg(msg);
-	Add_Front(tmp,head,next);
+	Add_Front(tmp,head,head->next);
 }
 
 
@@ -70,20 +70,20 @@ void Insert_Front(char * msg, struct list * head, struct list * next)
 参数1-head：链表的头
 参数2-prv：链表的头的prv
 */
-void Insert_Tail(char * msg, struct list * head, struct list * next)
+void Insert_Tail(char * msg, struct list * head)
 {
 	struct list *tmp = malloc_msg(msg);
-	Add_Tail(tmp,head,next);
+	Add_Tail(tmp,head,head->prv);
 }
 
 /*
 参数1-head：链表的头
 参数2-prv：链表的头的prv
 */
-void Drop_Tail(struct list *head, struct list *prv)
+void Drop_Tail(struct list *head)
 {
-	struct list *tmp = prv;
-	Del_Tail(head,prv);
+	struct list *tmp = head->prv;
+	Del_Tail(head,head->prv);
 	free_msg(tmp);
 }
 

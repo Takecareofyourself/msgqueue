@@ -10,7 +10,9 @@ typedef struct msgque{
 }msgq_t;
 
 void Init_Listhead(struct list *);
-void Insert_Front(char *msg,struct list *head,struct list *next);
+void Insert_Front(char *msg,struct list *head);
+void Insert_Tail(char * msg, struct list * head);
+void Drop_Tail(struct list *head);
 void Foreach_Ele(struct list *head);
 
 
