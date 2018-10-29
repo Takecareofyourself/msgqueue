@@ -9,6 +9,26 @@ typedef struct msgque{
 	char *msg;
 }msgq_t;
 
+#define __compiler_offsetof(a,b) __builtin_offsetof(a,b)
+	 
+#undef offsetof
+#ifdef __compiler_offsetof
+#define offsetof(TYPE,MEMBER) __compiler_offsetof(TYPE,MEMBER)
+#else
+#define offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
+#endif
+	 
+#define container_of(ptr, type, member) ({      \
+		const typeof( ((type *)0)->member ) *__mptr = (ptr);	\
+		(type *)( (char *)__mptr - offsetof(type,member) );})
+
+
+
+#define foreach_element(head,p) \
+	typeof(*(head)) *tmp = (head)->next; \
+	for(;(tmp) != (head);(p) = container_of( tmp, msgq_t, list) ,(tmp) = (tmp->next))
+
+
 void Init_Listhead(struct list *);
 void Insert_Front(char *msg,struct list *head);
 void Drop_Front(struct list * head);
