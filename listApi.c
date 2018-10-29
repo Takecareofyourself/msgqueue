@@ -1,20 +1,21 @@
 #include "listApi.h"
 
+	
 #if 0
 #define __compiler_offsetof(a,b) __builtin_offsetof(a,b)
- 
+	 
 #undef offsetof
 #ifdef __compiler_offsetof
 #define offsetof(TYPE,MEMBER) __compiler_offsetof(TYPE,MEMBER)
 #else
 #define offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
 #endif
- 
+	 
 #define container_of(ptr, type, member) ({      \
-    const typeof( ((type *)0)->member ) *__mptr = (ptr);    \
-    (type *)( (char *)__mptr - offsetof(type,member) );})
+		const typeof( ((type *)0)->member ) *__mptr = (ptr);	\
+		(type *)( (char *)__mptr - offsetof(type,member) );})
 #endif
-
+	
 /*
 参数head：为链表的头head
 参数next：为链表的头head.next所指向的地址，即head的后一个链表节点
@@ -26,7 +27,13 @@ void Add_Front(struct list *New,struct list *head,struct list *next)
 	next->prv = New;
 	New->prv = head;
 }
-
+	
+void Del_Front(struct list *head,struct list *next)
+{
+	next->next->prv = head;
+	head->next = next->next;
+}
+	
 /*
 参数head：为链表的头head
 参数next：为链表的头head.prv所指向的地址，即head的前一个链表节点
@@ -39,7 +46,7 @@ void Add_Tail(struct list *New,struct list *head,struct list *prv)
 	prv->next = New;
 	New->next = head;
 }
-
+	
 /*
 参数head：为链表的头head
 参数next：为链表的头head.prv所指向的地址，即head的前一个链表节点
@@ -49,10 +56,10 @@ void Del_Tail(struct list *head, struct list *prv)
 	prv->prv->next = head;
 	head->prv = prv->prv;
 }
-
+	
 void Init_head(struct list *head)
 {
 	head->next = head;
 	head->prv = head;
 }
-
+	

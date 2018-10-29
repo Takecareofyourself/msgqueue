@@ -1,5 +1,6 @@
 
 #include "msgqueue.h"
+#include "listApi.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -19,7 +20,7 @@
     (type *)( (char *)__mptr - offsetof(type,member) );})
 
 
-void free_msg(struct list *ptr)
+static void free_msg(struct list *ptr)
 {
 	msgq_t *p = container_of(ptr, msgq_t, list);
 	free(p->msg);
@@ -28,7 +29,7 @@ void free_msg(struct list *ptr)
 	p = NULL;
 }
 
-struct list * malloc_msg(char *msg)
+static struct list * malloc_msg(char *msg)
 {
 	if(NULL == msg)
 	{
@@ -57,7 +58,6 @@ struct list * malloc_msg(char *msg)
 
 /*
 参数1-head：链表的头
-参数2-prv：链表的头的next;
 */
 void Insert_Front(char * msg, struct list * head)
 {
@@ -65,10 +65,15 @@ void Insert_Front(char * msg, struct list * head)
 	Add_Front(tmp,head,head->next);
 }
 
+void Drop_Front(struct list *head)
+{
+	struct list *tmp = head->next;
+	Del_Front(head,head->next);
+	free_msg(tmp);
+}
 
 /*
 参数1-head：链表的头
-参数2-prv：链表的头的prv
 */
 void Insert_Tail(char * msg, struct list * head)
 {
@@ -78,7 +83,6 @@ void Insert_Tail(char * msg, struct list * head)
 
 /*
 参数1-head：链表的头
-参数2-prv：链表的头的prv
 */
 void Drop_Tail(struct list *head)
 {
@@ -104,3 +108,4 @@ void Init_Listhead(struct list *head)
 {
 	Init_head(head);
 }
+
