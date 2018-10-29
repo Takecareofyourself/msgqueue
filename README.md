@@ -1,6 +1,13 @@
 # msgqueue
 
-This is a simple message queue, it is use C language；
+此链表用户使用的 API 请看 msgqueue.h
 
-In Linux plat
+test.c文件是用来简单测试该链表的
+
+目前只实现了以下功能：
+1，头插入，尾插入；
+2，头节点删除，尾节点删除；
+3，遍历功能：测试用的遍历功能会打印节点信息；另外定义一个遍历用的宏 foreach_element是用遍历的方式查找节点。
+
+
 
