@@ -23,18 +23,22 @@ typedef struct msgque{
 		(type *)( (char *)__mptr - offsetof(type,member) );})
 
 
-
 #define foreach_element(head,p) \
 	typeof(*(head)) *tmp = (head)->next; \
 	for(;(tmp) != (head);(p) = container_of( tmp, msgq_t, list) ,(tmp) = (tmp->next))
 
-
-void Init_Listhead(struct list *);
+	
+int GetFront_Drop(struct list *head,char *msg,int len);
 void Insert_Front(char *msg,struct list *head);
 void Drop_Front(struct list * head);
+
+int GetTail_Drop(struct list *head,char *msg,int len);
 void Insert_Tail(char * msg, struct list * head);
 void Drop_Tail(struct list *head);
-void Foreach_Ele(struct list *head);
 
+void Delete_All(struct list *head);
+int Check_List(struct list *head);
+void Foreach_Ele(struct list *head);
+void Init_Listhead(struct list *);
 
 #endif

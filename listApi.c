@@ -56,6 +56,16 @@ void Del_Tail(struct list *head, struct list *prv)
 	prv->prv->next = head;
 	head->prv = prv->prv;
 }
+
+int Empty_Check(struct list *head)
+{
+	int ret = 0;
+	struct list *tmp1 = head->next;
+	struct list *tmp2 = head->prv;
+	if((tmp1 == head) && (tmp2 == head))
+		ret = 1;
+	return ret;
+}
 	
 void Init_head(struct list *head)
 {

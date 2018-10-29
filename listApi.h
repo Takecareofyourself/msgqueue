@@ -12,6 +12,8 @@ void Add_Tail(struct list *New,struct list *head,struct list *prv);
 
 void Del_Tail(struct list *head, struct list *prv);
 
+int Empty_Check(struct list *head);
+
 void Init_head(struct list * head);
 
 #endif

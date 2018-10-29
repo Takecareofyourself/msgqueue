@@ -46,6 +46,18 @@ static struct list * malloc_msg(char *msg)
 	return &onemsg->list;
 }
 
+int GetFront_Drop(struct list *head,char *msg,int len)
+{
+	struct list *tmp = head->next;
+	if(tmp == head)
+		return -1;
+
+	msgq_t *p = container_of(tmp, msgq_t,list);
+	strncpy(msg,p->msg,len);
+	Del_Front(head,head->next);
+	free_msg(tmp);
+	return 0;
+}
 /*
 参数1-head：链表的头
 */
@@ -58,8 +70,11 @@ void Insert_Front(char * msg, struct list * head)
 void Drop_Front(struct list *head)
 {
 	struct list *tmp = head->next;
-	Del_Front(head,head->next);
-	free_msg(tmp);
+	if(tmp != head)
+	{
+		Del_Front(head,head->next);
+		free_msg(tmp);
+	}
 }
 
 /*
@@ -71,20 +86,52 @@ void Insert_Tail(char * msg, struct list * head)
 	Add_Tail(tmp,head,head->prv);
 }
 
+int GetTail_Drop(struct list *head,char *msg,int len)
+{
+	struct list *tmp = head->prv;
+	if(tmp == head)
+		return -1;
+	
+	msgq_t *p = container_of(tmp,msgq_t,list);
+	strncpy(msg,p->msg,len);
+	Del_Tail(head,head->prv);
+	free_msg(tmp);
+	
+	return 0;
+}
 /*
 参数1-head：链表的头
 */
 void Drop_Tail(struct list *head)
 {
 	struct list *tmp = head->prv;
-	Del_Tail(head,head->prv);
-	free_msg(tmp);
+	if(tmp != head)
+	{
+		Del_Tail(head,head->prv);
+		free_msg(tmp);
+	}
+}
+
+void Delete_All(struct list *head)
+{
+	struct list *tmp = NULL;
+	int ret = Check_List(head);
+	if(ret)
+		return ;
+	
+	do
+	{
+		tmp = head->next;
+		Drop_Tail(head);
+	}while(tmp != head);
+	
 }
 
 void Foreach_Ele(struct list *head)
 {
 	struct list *tmp = head->next;
-
+	if(tmp == head)
+		return;
 	do
 	{
 		msgq_t *p = container_of(tmp, msgq_t, list);
@@ -92,6 +139,13 @@ void Foreach_Ele(struct list *head)
 		tmp = tmp->next;
 	}while(tmp != head);
 
+}
+/*
+返回1 为空；返回0为非空
+*/
+int Check_List(struct list *head)
+{
+	return Empty_Check(head);
 }
 
 void Init_Listhead(struct list *head)
