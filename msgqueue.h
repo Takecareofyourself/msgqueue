@@ -25,7 +25,9 @@ typedef struct msgque{
 
 #define foreach_element(head,p) \
 	typeof(*(head)) *tmp = (head)->next; \
-	for(;(tmp) != (head);(p) = container_of( tmp, msgq_t, list) ,(tmp) = (tmp->next))
+	for((p) = container_of(tmp, typeof(*(p)), list);\
+		(tmp) != (head);\
+		(tmp) = (tmp->next),(p) = container_of( tmp, typeof(*(p)), list))
 
 	
 int GetFront_Drop(struct list *head,char *msg,int len);
