@@ -3,43 +3,21 @@
 #define _MSGQUEUE_H_
 
 #include "Public.h"
-
-typedef struct msgque{
-	struct list list;
-	char *msg;
-}msgq_t;
-
-#define __compiler_offsetof(a,b) __builtin_offsetof(a,b)
-	 
-#undef offsetof
-#ifdef __compiler_offsetof
-#define offsetof(TYPE,MEMBER) __compiler_offsetof(TYPE,MEMBER)
-#else
-#define offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
-#endif
-	 
-#define container_of(ptr, type, member) ({      \
-		const typeof( ((type *)0)->member ) *__mptr = (ptr);	\
-		(type *)( (char *)__mptr - offsetof(type,member) );})
-
-
-#define foreach_element(head,p) \
-	typeof(*(head)) *tmp = (head)->next; \
-	for((p) = container_of(tmp, typeof(*(p)), list);\
-		(tmp) != (head);\
-		(tmp) = (tmp->next),(p) = container_of( tmp, typeof(*(p)), list))
-
-	
+int Update_list(struct list *head,const char *path);
+int Save_list(struct list *head,const char *path);
 int GetFront_Drop(struct list *head,char *msg,int len);
-void Insert_Front(char *msg,struct list *head);
+int GetFront(struct list *head,char *msg,int len);
+void Insert_Front(struct list *head,const char *msg);
 void Drop_Front(struct list * head);
 
-int GetTail_Drop(struct list *head,char *msg,int len);
-void Insert_Tail(char * msg, struct list * head);
+int GetTail_Drop(struct list *head, char *msg,int len);
+int GetTail(struct list *head, char *msg,int len);
+void Insert_Tail(struct list * head,const char * msg);
 void Drop_Tail(struct list *head);
 
 void Delete_All(struct list *head);
 int Check_List(struct list *head);
+int Count_list(struct list *head);
 void Foreach_Ele(struct list *head);
 void Init_Listhead(struct list *);
 
