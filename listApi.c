@@ -1,5 +1,6 @@
 #include "listApi.h"
 
+#define NULL ((void *)0)
 	
 #if 0
 #define __compiler_offsetof(a,b) __builtin_offsetof(a,b)
@@ -15,7 +16,37 @@
 		const typeof( ((type *)0)->member ) *__mptr = (ptr);	\
 		(type *)( (char *)__mptr - offsetof(type,member) );})
 #endif
-	
+/*location 参数需要一个指向NULL的指针*/
+struct list *FindByIndex(struct list *head ,struct list *localtion,int index)
+{
+	int id = 0;
+	struct list *prv = head;
+	struct list *next = head;
+	while(1)
+	{
+		if(index < 0){
+			id--;
+			prv = prv->prv;
+		}
+		if(index > 0)
+		{
+			id++;
+			next = next->next;
+		}
+		if(prv == next){
+			return NULL;
+		}
+		if(index == id){
+			if(index < 0)
+				localtion = prv;
+			if(index > 0)
+				localtion = next;
+			return localtion;
+		}
+	}
+	return NULL;
+}
+
 /*
 参数head：为链表的头head
 参数next：为链表的头head.next所指向的地址，即head的后一个链表节点

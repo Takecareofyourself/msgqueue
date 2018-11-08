@@ -78,7 +78,6 @@ int Save_list(struct list *head,const char *path)
 	return 0;
 }
 
-
 static void free_msg(struct list *ptr)
 {
 	msgq_t *p = container_of(ptr, msgq_t, list);
@@ -113,6 +112,19 @@ static struct list * malloc_msg(const char *msg)
 	onestr[len+1] = 0;
 	onemsg->msg = onestr;
 	return &onemsg->list;
+}
+
+char * FindMsgByIndex(struct list *head, int index)
+{
+	int id = 0;
+	msgq_t *p = NULL;
+	
+	struct list *tmp = FindByIndex(head,tmp,index);
+	if(tmp != NULL){
+		p = container_of(tmp,msgq_t,list);
+		return p->msg;
+	}
+	return NULL;
 }
 
 int GetFront_Drop(struct list *head,char *msg,int len)

@@ -3,6 +3,8 @@
 #define _MSGQUEUE_H_
 
 #include "Public.h"
+
+char * FindMsgByIndex(struct list *head, int index);
 int Update_list(struct list *head,const char *path);
 int Save_list(struct list *head,const char *path);
 int GetFront_Drop(struct list *head,char *msg,int len);

@@ -4,6 +4,8 @@
 
 #include "Public.h"
 
+struct list *FindByIndex(struct list *head ,struct list *localtion,int index);
+
 void Add_Front(struct list *New,struct list *head,struct list *next);
 
 void Del_Front(struct list *head,struct list *next);

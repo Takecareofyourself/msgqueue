@@ -7,7 +7,7 @@ CFLAGS = -g
 INC = -I./ -I../
  
 #指定要链接的动态库或静态库 -L是指定动态库路径，非标准的动态库需要此参数
-LIBS = -lpthread 
+LIBS = -lpthread -L../ #-lmque 
  
 #把上面放一起
 CXXFLAGS = ${CFLAGS} ${INC} 
@@ -17,6 +17,7 @@ EXEC = msg
  
 #指定由哪些文件来生成可执行文件
 OBJS = test.o ../listApi.o ../msgqueue.o 
+#OBJS = test.o  
  
 #make执行动作
 ${EXEC} : ${OBJS}
