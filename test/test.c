@@ -38,12 +38,13 @@ int main(void)
 	printf("+++++++++++++\n");
 	Foreach_Ele(&head);
 	printf("+++++++++++++\n");
-	msg = FindMsgByIndex(&head,4);
+	msg = FindMsgByIndex(&head,2);
 	if(msg != NULL){
 		printf("msg is not null\n");
 		printf("find is :%s\n",msg);
 	}
-		
+	printf("+++++++++++++\n");
+	testfunction(&head);
 #if 0
 	Delete_All(&head);
 	ret = Check_List(&head);

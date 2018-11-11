@@ -1,9 +1,11 @@
-
+/*
+此处实现的是针对特定的链表结构实现的API
+*/
 #ifndef _MSGQUEUE_H_
 #define _MSGQUEUE_H_
 
 #include "Public.h"
-
+void testfunction(struct list *head);
 char * FindMsgByIndex(struct list *head, int index);
 int Update_list(struct list *head,const char *path);
 int Save_list(struct list *head,const char *path);

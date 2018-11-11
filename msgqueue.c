@@ -11,25 +11,26 @@ typedef struct msgque{
 	char *msg;
 }msgq_t;
 
-#define __compiler_offsetof(a,b) __builtin_offsetof(a,b)
-	 
-#undef offsetof
-#ifdef __compiler_offsetof
-#define offsetof(TYPE,MEMBER) __compiler_offsetof(TYPE,MEMBER)
-#else
-#define offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
-#endif
-	 
-#define container_of(ptr, type, member) ({      \
-		const typeof( ((type *)0)->member ) *__mptr = (ptr);	\
-		(type *)( (char *)__mptr - offsetof(type,member) );})
-
 
 #define foreach_element(head,p) \
 	typeof(*(head)) *tmp = (head)->next; \
 	for((p) = container_of(tmp, typeof(*(p)), list);\
 		(tmp) != (head);\
 		(tmp) = (tmp->next),(p) = container_of( tmp, typeof(*(p)), list))
+
+#define element_entry(ptr,type,member)  container_of(ptr, type, member)
+
+#define foreach_elementV2(head,p) \
+			foreache_list((head),(tmp))
+
+void testfunction(struct list *head)
+{
+	struct list *tmp = NULL;
+	foreach_elementV2(head,tmp){
+		msgq_t *p = element_entry(tmp,msgq_t,list);
+		printf("%s\n",p->msg);
+	}
+}
 
 int Update_list(struct list *head,const char *path)
 {
