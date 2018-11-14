@@ -6,37 +6,31 @@
 #include <unistd.h>
 #include <stdlib.h>
 
+#ifndef DEBUG
 typedef struct msgque{
 	struct list list;
-	char *msg;
+	unsigned int size;
+	void *msg;
 }msgq_t;
+#endif
 
 
-#define foreach_element(head,p) \
+#define foreach_element_in(head,p) \
 	typeof(*(head)) *tmp = (head)->next; \
-	for((p) = container_of(tmp, typeof(*(p)), list);\
+	for((p) = element_entry(tmp, typeof(*(p)), list);\
 		(tmp) != (head);\
-		(tmp) = (tmp->next),(p) = container_of( tmp, typeof(*(p)), list))
-
-#define element_entry(ptr,type,member)  container_of(ptr, type, member)
-
+		(tmp) = (tmp->next),(p) = element_entry( tmp, typeof(*(p)), list))
+#if 0
 #define foreach_elementV2(head,p) \
 			foreache_list((head),(tmp))
-
-void testfunction(struct list *head)
-{
-	struct list *tmp = NULL;
-	foreach_elementV2(head,tmp){
-		msgq_t *p = element_entry(tmp,msgq_t,list);
-		printf("%s\n",p->msg);
-	}
-}
-
+#endif 
+#if 0
 int Update_list(struct list *head,const char *path)
 {
 	msgq_t *p = NULL;
-	int len = 0;
-	char nbuff[32] = {0};
+	int size = 0;
+	void *nbuff = NULL;
+	char *buff[4] = {0};
 	if(NULL == path){
 		return -1;
 	}
@@ -47,17 +41,22 @@ int Update_list(struct list *head,const char *path)
 	if(fp == NULL)
 		return -1;
 	while(!feof(fp)){
-		fgets(nbuff,32,fp);
-		len = strlen(nbuff);
-		if(len <= 1)
+		fgets(buff,4,fp);
+		size = atoi(buff);
+		if(size <= 0)
 			continue;
+
+		nbuff = malloc(size);
+		fgets(nbuff,size,fp);
+
 		if(	nbuff[len-1] == '\n')
 			nbuff[len-1] = '\0';
-		Insert_Tail(head,nbuff);
+		Insert_Tail(head,nbuff,size);
+		free(nbuff);nbuff = NULL;
 	}
 	return 0;
 }
-
+#endif
 int Save_list(struct list *head,const char *path)
 {
 	msgq_t *p = NULL;
@@ -72,49 +71,15 @@ int Save_list(struct list *head,const char *path)
 		return -3;
 	}
 	
-	foreach_element(head,p){
-		fprintf(fp,"%s\n",p->msg);
+	foreach_element_in(head,p){
+		fprintf(fp,"%d\n",p->size);
+		fwrite(p->msg,p->size,1,fp);
+		fprintf(fp,"\n");
 	}
 	fclose(fp);
 	return 0;
 }
-
-static void free_msg(struct list *ptr)
-{
-	msgq_t *p = container_of(ptr, msgq_t, list);
-	free(p->msg);
-	p->msg = NULL;
-	free(p);
-	p = NULL;
-}
-
-static struct list * malloc_msg(const char *msg)
-{
-	if(NULL == msg)
-	{
-		return NULL;
-	}
-	int len = strlen(msg);
-	msgq_t *onemsg = (msgq_t *)malloc(sizeof(msgq_t));
-	if(NULL == onemsg)
-	{
-		printf("msg is nill\n");
-		return NULL;
-	}
-	onemsg->list.next = NULL;
-	onemsg->list.prv = NULL;
-	char *onestr = (char *)malloc(len+1);
-	if(NULL == onestr)
-	{
-		printf("str is nill\n");
-		return NULL;
-	}
-	strcpy(onestr,msg);
-	onestr[len+1] = 0;
-	onemsg->msg = onestr;
-	return &onemsg->list;
-}
-
+#if 0
 char * FindMsgByIndex(struct list *head, int index)
 {
 	int id = 0;
@@ -127,37 +92,73 @@ char * FindMsgByIndex(struct list *head, int index)
 	}
 	return NULL;
 }
+#endif 
 
-int GetFront_Drop(struct list *head,char *msg,int len)
+static void free_msg(struct list *ptr)
+{
+	msgq_t *p = element_entry(ptr, msgq_t, list);
+	free(p->msg);
+	p->msg = NULL;
+	free(p);
+	p = NULL;
+}
+
+static struct list * malloc_msg(void *msg,unsigned int size)
+{
+	if(NULL == msg)
+	{
+		return NULL;
+	}
+	msgq_t *onemsg = (msgq_t *)malloc(sizeof(msgq_t));
+	if(NULL == onemsg)
+	{
+		printf("msg is nill\n");
+		return NULL;
+	}
+	memset(onemsg,0,sizeof(msgq_t));
+	onemsg->list.next = NULL;
+	onemsg->list.prv = NULL;
+	onemsg->size = size;
+	void *onestr = malloc(size);
+	if(NULL == onestr)
+	{
+		printf("str is nill\n");
+		return NULL;
+	}
+	memcpy(onestr,msg,size);
+	onemsg->msg = onestr;
+	return &onemsg->list;
+}
+
+int GetFront_Drop(struct list *head,void *msg)
 {
 	struct list *tmp = head->next;
 	if(Check_List(head))
 		return -1;
 
-	msgq_t *p = container_of(tmp, msgq_t,list);
-	strncpy(msg,p->msg,len);
+	msgq_t *p = element_entry(tmp, msgq_t,list);
+	memcpy(msg,p->msg,p->size);
 	Del_Front(head,head->next);
 	free_msg(tmp);
 	return 0;
 }
 
-int GetFront(struct list *head,char *msg,int len)
+int GetFront(struct list *head,void *msg)
 {
 	struct list *tmp = head->next;
 	if(Check_List(head))
 		return -1;
-	msgq_t *p = container_of(tmp, msgq_t,list);
-	strncpy(msg,p->msg,len);
+	msgq_t *p = element_entry(tmp, msgq_t,list);
+	memcpy(msg,p->msg,p->size);
 	return 0;
 }
 /*
 参数1-head：链表的头
 */
-void Insert_Front( struct list * head,const char * msg)
+void Insert_Front(struct list * head,void * msg,unsigned int size)
 {
-	struct list *tmp = malloc_msg(msg);
+	struct list *tmp = malloc_msg(msg,size);
 	Add_Front(tmp,head,head->next);
-
 }
 
 void Drop_Front(struct list *head)
@@ -173,34 +174,34 @@ void Drop_Front(struct list *head)
 /*
 参数1-head：链表的头
 */
-void Insert_Tail(struct list * head,const char * msg)
+void Insert_Tail(struct list * head,void *msg,unsigned int size)
 {
-	struct list *tmp = malloc_msg(msg);
+	struct list *tmp = malloc_msg(msg,size);
 	Add_Tail(tmp,head,head->prv);
 }
 
-int GetTail_Drop(struct list *head, char *msg,int len)
+int GetTail_Drop(struct list *head, void *msg)
 {
 	struct list *tmp = head->prv;
 	if(Check_List(head))
 		return -1;
 	
-	msgq_t *p = container_of(tmp,msgq_t,list);
-	strncpy(msg,p->msg,len);
+	msgq_t *p = element_entry(tmp,msgq_t,list);
+	memcpy(msg,p->msg,p->size);
 	Del_Tail(head,head->prv);
 	free_msg(tmp);
 	
 	return 0;
 }
 
-int GetTail(struct list *head,char *msg,int len)
+int GetTail(struct list *head,void *msg)
 {
 	struct list *tmp = head->prv;
 	if(Check_List(head))
 		return -1;
 	
-	msgq_t *p = container_of(tmp,msgq_t,list);
-	strncpy(msg,p->msg,len);
+	msgq_t *p = element_entry(tmp,msgq_t,list);
+	memcpy(msg,p->msg,p->size);
 
 	return 0;
 }
@@ -254,7 +255,7 @@ void Foreach_Ele(struct list *head)
 	do
 	{
 		msgq_t *p = container_of(tmp, msgq_t, list);
-		printf("%s\n",p->msg);
+		//printf("%s\n",p->msg);
 		tmp = tmp->next;
 	}while(tmp != head);
 
