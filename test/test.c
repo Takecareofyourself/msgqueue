@@ -25,12 +25,21 @@ int main(void)
 	printf("%d\n",sizeof(a1));
 	Insert_Front(&head,&a2,sizeof(a2));
 	printf("%d\n",sizeof(a2));
-	struct my *ele;
-	foreach_element(&head,ele){
+	struct my *ele=NULL;
+	//foreach_element(&head,ele){
 		/*测试打印链表中的元素*/
-		printf("Key: %d\n",ele->key);
-		printf("Val: %s\n",ele->val);
-	}
+		//printf("Key: %d\n",ele->key);
+		//printf("Val: %s\n",ele->val);
+	//}
 	Save_list(&head,"./my.txt");
+	Delete_All(&head);
+	printf("Num: %d\n",Count_list(&head));
+	Update_list(&head,"./my.txt");
+	struct my *ele1=NULL;
+	foreach_element(&head,ele1){
+		/*测试打印链表中的元素*/
+		printf("Key: %d\n",ele1->key);
+		printf("Val: %s\n",ele1->val);
+	}
 	return 0;
 }

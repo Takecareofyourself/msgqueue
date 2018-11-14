@@ -24,13 +24,13 @@ typedef struct msgque{
 #define foreach_elementV2(head,p) \
 			foreache_list((head),(tmp))
 #endif 
-#if 0
+
 int Update_list(struct list *head,const char *path)
 {
 	msgq_t *p = NULL;
 	int size = 0;
-	void *nbuff = NULL;
-	char *buff[4] = {0};
+	char *nbuff = NULL;
+	char buff[4] = {0};
 	if(NULL == path){
 		return -1;
 	}
@@ -43,20 +43,21 @@ int Update_list(struct list *head,const char *path)
 	while(!feof(fp)){
 		fgets(buff,4,fp);
 		size = atoi(buff);
+		printf("size is %d\n",size);
 		if(size <= 0)
 			continue;
 
 		nbuff = malloc(size);
 		fgets(nbuff,size,fp);
 
-		if(	nbuff[len-1] == '\n')
-			nbuff[len-1] = '\0';
-		Insert_Tail(head,nbuff,size);
+		if(	nbuff[size-1] == '\n')
+			nbuff[size-1] = '\0';
+		Insert_Tail(head,(void *)nbuff,size);
 		free(nbuff);nbuff = NULL;
 	}
 	return 0;
 }
-#endif
+
 int Save_list(struct list *head,const char *path)
 {
 	msgq_t *p = NULL;
@@ -72,8 +73,8 @@ int Save_list(struct list *head,const char *path)
 	}
 	
 	foreach_element_in(head,p){
-		fprintf(fp,"%d\n",p->size);
-		fwrite(p->msg,p->size,1,fp);
+		fprintf(fp,"%d",p->size);
+		fwrite((char *)p->msg,p->size,1,fp);
 		fprintf(fp,"\n");
 	}
 	fclose(fp);
