@@ -5,6 +5,9 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 #ifndef DEBUG
 typedef struct msgque{
@@ -28,32 +31,39 @@ typedef struct msgque{
 int Update_list(struct list *head,const char *path)
 {
 	msgq_t *p = NULL;
-	int size = 0;
-	char *nbuff = NULL;
-	char buff[4] = {0};
+	unsigned int size = 0;
+	int len = 0;
+	void *ele = NULL;
 	if(NULL == path){
 		return -1;
 	}
 	if(access(path,F_OK)){
 		return -1;
 	}
-	FILE *fp = fopen(path,"r");
+	FILE *fp = fopen(path,"rb");
 	if(fp == NULL)
 		return -1;
-	while(!feof(fp)){
-		fgets(buff,4,fp);
-		size = atoi(buff);
-		printf("size is %d\n",size);
-		if(size <= 0)
-			continue;
-
-		nbuff = malloc(size);
-		fgets(nbuff,size,fp);
-
-		if(	nbuff[size-1] == '\n')
-			nbuff[size-1] = '\0';
-		Insert_Tail(head,(void *)nbuff,size);
-		free(nbuff);nbuff = NULL;
+	while(1)
+	{
+		len = fread(&size,sizeof(size),1,fp);
+		if(len <= 0)
+			break;
+		printf("size: %u and len %d\n",size,len);
+		ele = malloc(size);
+		if(ele == NULL){
+			printf("Malloc is error\n");
+			break;
+		}
+		memset(ele,0,size);
+		len = fread(ele,size,1,fp);
+		printf("ele: %d\n",len);
+		if(len > 0){
+			Insert_Tail(head,(void *)ele,size);
+		}
+		if(ele){
+			free(ele);
+			ele = NULL;
+		}
 	}
 	return 0;
 }
@@ -64,7 +74,7 @@ int Save_list(struct list *head,const char *path)
 	if(NULL == path){
 		return -1;
 	}
-	FILE *fp = fopen(path,"w");
+	FILE *fp = fopen(path,"wb");
 	if(fp == NULL){
 		return -2;
 	}
@@ -73,15 +83,14 @@ int Save_list(struct list *head,const char *path)
 	}
 	
 	foreach_element_in(head,p){
-		fprintf(fp,"%d",p->size);
-		fwrite((char *)p->msg,p->size,1,fp);
-		fprintf(fp,"\n");
+		fwrite(&(p->size),sizeof(p->size),1,fp);
+		fwrite(p->msg,p->size,1,fp);
 	}
 	fclose(fp);
 	return 0;
 }
-#if 0
-char * FindMsgByIndex(struct list *head, int index)
+
+void * FindMsgByIndex(struct list *head, int index)
 {
 	int id = 0;
 	msgq_t *p = NULL;
@@ -93,7 +102,7 @@ char * FindMsgByIndex(struct list *head, int index)
 	}
 	return NULL;
 }
-#endif 
+
 
 static void free_msg(struct list *ptr)
 {

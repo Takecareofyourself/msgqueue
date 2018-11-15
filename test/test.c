@@ -41,5 +41,12 @@ int main(void)
 		printf("Key: %d\n",ele1->key);
 		printf("Val: %s\n",ele1->val);
 	}
+	ele1 = (struct my *)FindMsgByIndex(&head,3);
+	if(ele1){
+		printf("Key: %d\n",ele1->key);
+		printf("Val: %s\n",ele1->val);
+	}else{
+		printf("Not find\n");
+	}
 	return 0;
 }

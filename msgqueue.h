@@ -35,8 +35,9 @@ typedef struct msgque{
 		(tmp) = (tmp->next),(p) = element_entry( tmp,msgq_t, list),ele = p->msg)
 
 #endif 
-//char * FindMsgByIndex(struct list *head, int index);
-//int Update_list(struct list *head,const char *path);
+/*通过链表顺序查找，没有该序号则返回NULL*/
+void * FindMsgByIndex(struct list *head, int index);
+int Update_list(struct list *head,const char *path);
 int Save_list(struct list *head,const char *path);
 int GetFront_Drop(struct list *head,void *msg);
 int GetFront(struct list *head,void *msg);
