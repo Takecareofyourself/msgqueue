@@ -28,7 +28,7 @@ typedef struct msgque{
 			foreache_list((head),(tmp))
 #endif 
 
-int Update_list(struct list *head,const char *path)
+int UpdateListFromFile(struct list *head,const char *path)
 {
 	msgq_t *p = NULL;
 	unsigned int size = 0;
@@ -68,7 +68,7 @@ int Update_list(struct list *head,const char *path)
 	return 0;
 }
 
-int Save_list(struct list *head,const char *path)
+int SaveListToFile(struct list *head,const char *path)
 {
 	msgq_t *p = NULL;
 	if(NULL == path){
@@ -278,7 +278,7 @@ int Check_List(struct list *head)
 	return Empty_Check(head);
 }
 
-void Init_Listhead(struct list *head)
+void InitListHead(struct list *head)
 {
 	Init_head(head);
 }

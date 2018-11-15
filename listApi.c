@@ -8,29 +8,29 @@ struct list *FindByIndex(struct list *head ,struct list *localtion,int index)
 	int id = 0;
 	struct list *prv = head;
 	struct list *next = head;
+	localtion = NULL;
 	while(1)
 	{
 		if(index < 0){
 			id--;
 			prv = prv->prv;
 		}
-		if(index > 0)
-		{
+		if(index > 0){
 			id++;
 			next = next->next;
 		}
 		if(prv == next){
-			return NULL;
+			break;
 		}
 		if(index == id){
 			if(index < 0)
 				localtion = prv;
 			if(index > 0)
 				localtion = next;
-			return localtion;
+			break;
 		}
 	}
-	return NULL;
+	return localtion;
 }
 
 /*

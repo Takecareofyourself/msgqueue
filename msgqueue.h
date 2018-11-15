@@ -37,8 +37,8 @@ typedef struct msgque{
 #endif 
 /*通过链表顺序查找，没有该序号则返回NULL*/
 void * FindMsgByIndex(struct list *head, int index);
-int Update_list(struct list *head,const char *path);
-int Save_list(struct list *head,const char *path);
+int UpdateListFromFile(struct list *head,const char *path);
+int SaveListToFile(struct list *head,const char *path);
 int GetFront_Drop(struct list *head,void *msg);
 int GetFront(struct list *head,void *msg);
 void Insert_Front(struct list *head,void *msg,unsigned int size);
@@ -53,6 +53,6 @@ void Delete_All(struct list *head);
 int Check_List(struct list *head);
 int Count_list(struct list *head);
 void Foreach_Ele(struct list *head);
-void Init_Listhead(struct list *);
+void InitListHead(struct list *);
 
 #endif

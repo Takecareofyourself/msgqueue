@@ -19,7 +19,7 @@ int main(void)
 	a2.key = 10;
 	strcpy(a2.val,"test2");
 	struct list head;
-	Init_Listhead(&head);
+	InitListHead(&head);
 
 	Insert_Front(&head,&a1,sizeof(a1));
 	printf("%d\n",sizeof(a1));
@@ -31,10 +31,10 @@ int main(void)
 		//printf("Key: %d\n",ele->key);
 		//printf("Val: %s\n",ele->val);
 	//}
-	Save_list(&head,"./my.txt");
+	SaveListToFile(&head,"./my.txt");
 	Delete_All(&head);
 	printf("Num: %d\n",Count_list(&head));
-	Update_list(&head,"./my.txt");
+	UpdateListFromFile(&head,"./my.txt");
 	struct my *ele1=NULL;
 	foreach_element(&head,ele1){
 		/*测试打印链表中的元素*/
