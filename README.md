@@ -21,12 +21,5 @@ test.c文件是用来简单测试该链表的
 2，msgqueue.c 封装listApi.h 提供的接口函数，实现对具体的链表元素操作（即操作struct msg）
 
 /*11-15 更新*/
-1，修改struct msg 的结构，增加 void 指针用来接收任何结构体，而对应结构体大小保存到size
-====================================================
-   typedef struct msg{                    typedef struct msg{
-      struct list list;         ===>           struct list list;
-      char *msg;                               unsigned int size;
-   }msg_t;                                     void *msg;
-                                           }msg_t;
-====================================================                            
+1，修改struct msg 的结构，增加 void 指针用来接收任何结构体，而对应结构体大小保存到size                        
 2，增加缓存链表到文件和从文件读取出来的函数
