@@ -5,7 +5,6 @@
 #define _MSGQUEUE_H_
 
 #include "Public.h"
-#include <stdio.h>
 
 #define DEBUG
 #ifdef DEBUG

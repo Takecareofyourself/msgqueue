@@ -4,10 +4,10 @@ CC = gcc
 CFLAGS = -g
  
 #指定头文件路径，此处用于指定非标准库的头文件路径
-INC = -I./ -I../
+INC = -I./ -I../QueueLib
  
 #指定要链接的动态库或静态库 -L是指定动态库路径，非标准的动态库需要此参数
-LIBS = -lpthread -L../ #-lmque 
+LIBS = -lpthread -L../QueueLib -lmsgque 
  
 #把上面放一起
 CXXFLAGS = ${CFLAGS} ${INC} 
@@ -16,7 +16,7 @@ CXXFLAGS = ${CFLAGS} ${INC}
 EXEC = msg
  
 #指定由哪些文件来生成可执行文件
-OBJS = test.o ../listApi.o ../msgqueue.o 
+OBJS = test.o 
 #OBJS = test.o  
  
 #make执行动作

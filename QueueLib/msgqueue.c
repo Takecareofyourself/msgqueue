@@ -47,7 +47,6 @@ int UpdateListFromFile(struct list *head,const char *path)
 		len = fread(&size,sizeof(size),1,fp);
 		if(len <= 0)
 			break;
-		printf("size: %u and len %d\n",size,len);
 		ele = malloc(size);
 		if(ele == NULL){
 			printf("Malloc is error\n");
@@ -55,7 +54,6 @@ int UpdateListFromFile(struct list *head,const char *path)
 		}
 		memset(ele,0,size);
 		len = fread(ele,size,1,fp);
-		printf("ele: %d\n",len);
 		if(len > 0){
 			Insert_Tail(head,(void *)ele,size);
 		}
@@ -92,8 +90,8 @@ int SaveListToFile(struct list *head,const char *path)
 void * FindMsgByIndex(struct list *head, int index)
 {
 	msgq_t *p = NULL;
-	
-	struct list *tmp = FindByIndex(head,tmp,index);
+	struct list *tmp = NULL;
+	tmp = FindByIndex(head,tmp,index);
 	if(tmp != NULL){
 		p = container_of(tmp,msgq_t,list);
 		return p->msg;
@@ -166,6 +164,8 @@ int GetFront(struct list *head,void *msg)
 void Insert_Front(struct list * head,void * msg,unsigned int size)
 {
 	struct list *tmp = malloc_msg(msg,size);
+	if(NULL == tmp)
+		return;
 	Add_Front(tmp,head,head->next);
 }
 
@@ -185,6 +185,8 @@ void Drop_Front(struct list *head)
 void Insert_Tail(struct list * head,void *msg,unsigned int size)
 {
 	struct list *tmp = malloc_msg(msg,size);
+	if(NULL == tmp)
+		return;
 	Add_Tail(tmp,head,head->prv);
 }
 
