@@ -30,7 +30,6 @@ typedef struct msgque{
 
 int UpdateListFromFile(struct list *head,const char *path)
 {
-	msgq_t *p = NULL;
 	unsigned int size = 0;
 	int len = 0;
 	void *ele = NULL;
@@ -92,7 +91,6 @@ int SaveListToFile(struct list *head,const char *path)
 
 void * FindMsgByIndex(struct list *head, int index)
 {
-	int id = 0;
 	msgq_t *p = NULL;
 	
 	struct list *tmp = FindByIndex(head,tmp,index);
