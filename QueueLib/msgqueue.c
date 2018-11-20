@@ -18,11 +18,10 @@ typedef struct msgque{
 #endif
 
 
-#define foreach_element_in(head,p) \
-	typeof(*(head)) *tmp = (head)->next; \
-	for((p) = element_entry(tmp, typeof(*(p)), list);\
+#define foreach_element_in(head,tmp,p) \
+	for((p) = element_entry((tmp), typeof(*(p)), list);\
 		(tmp) != (head);\
-		(tmp) = (tmp->next),(p) = element_entry( tmp, typeof(*(p)), list))
+		(tmp) = ((tmp)->next),(p) = element_entry( (tmp), typeof(*(p)), list))
 #if 0
 #define foreach_elementV2(head,p) \
 			foreache_list((head),(tmp))
@@ -79,7 +78,7 @@ int SaveListToFile(struct list *head,const char *path)
 		return -3;
 	}
 	
-	foreach_element_in(head,p){
+	foreach_element_in(head,head->next,p){
 		fwrite(&(p->size),sizeof(p->size),1,fp);
 		fwrite(p->msg,p->size,1,fp);
 	}
@@ -256,7 +255,7 @@ int Count_list(struct list *head)
 	}while(tmp != head);
 	return i;
 }
-
+#if 0
 void Foreach_Ele(struct list *head)
 {
 	struct list *tmp = head->next;
@@ -270,6 +269,7 @@ void Foreach_Ele(struct list *head)
 	}while(tmp != head);
 
 }
+#endif
 /*
 返回1 为空；返回0为非空
 */

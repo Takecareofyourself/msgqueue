@@ -51,7 +51,7 @@ void Drop_Tail(struct list *head);
 void Delete_All(struct list *head);
 int Check_List(struct list *head);
 int Count_list(struct list *head);
-void Foreach_Ele(struct list *head);
+//void Foreach_Ele(struct list *head);  /*删除，使用foreach宏代替遍历方式*/
 void InitListHead(struct list *);
 
 #endif
