@@ -1,103 +1,82 @@
 #include "socketApi.h"
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <string.h>
 
-#define SERVER_PORT 6425
-#define BUFF_LEN 1024
 
-#ifdef SERVER
-
-/*
-    server:
-            socket-->bind-->recvfrom-->sendto-->close
-*/
-
-int main(int argc, char* argv[])
-{
-    int server_fd, ret;
-    struct sockaddr_in ser_addr; 
-
-    server_fd = socket(AF_INET, SOCK_DGRAM, 0); //AF_INET:IPV4;SOCK_DGRAM:UDP
-    if(server_fd < 0)
-    {
-        printf("create socket fail!\n");
-        return -1;
-    }
-
-    memset(&ser_addr, 0, sizeof(ser_addr));
-    ser_addr.sin_family = AF_INET;
-    ser_addr.sin_addr.s_addr = htonl(INADDR_ANY); //IP地址，需要进行网络序转换，INADDR_ANY：本地地址
-    ser_addr.sin_port = htons(SERVER_PORT);  //端口号，需要网络序转换
-
-    ret = bind(server_fd, (struct sockaddr*)&ser_addr, sizeof(ser_addr));
-    if(ret < 0)
-    {
-        printf("socket bind fail!\n");
-        return -1;
-    }
-
-    handle_udp_msg(server_fd);   //处理接收到的数据
-
-    close(server_fd);
-    return 0;
-}
-
-#else
-
-/*
-    client:
-            socket-->sendto-->revcfrom-->close
-*/
+#define SERVER_PORT 8887
+#define LOCAL_PORT 7245
 #define SERVER_IP "127.0.0.1"
 
-struct localNet{
-    int Port;
-    char ipAddr[24];
-};
 
-int CreateOneConnet(const char *ipAddr,int portNum,struct sockaddr_in *ser)
+int CatchSubs(struct server *ser)
 {
-    int fd = 0;
+    struct local one;
+    one.mflag = -1;
+    int flags = 1;
+    int ret =0;
+    struct sockaddr_in cli = {0};
+    socklen_t len = sizeof(cli) ;
+    memset(&cli,0,sizeof(cli));
+
+    ret = bind(ser->fd,(struct sockaddr *)&ser->svr,ser->len);
+    if(ret == -1){
+        perror("bind");
+    }
+  
+    ret = recvfrom(ser->fd,&one,sizeof(one),0,(struct sockaddr *)&cli,&len);
+    printf("recv : %d\n",ret);
+    printf("%s and %d\n",one.ipAddr,one.mflag);
     
-    fd = socket(AF_INET,SOCK_DGRAM,0);
-    if(fd < -1){
-        perror("socket");
-        return -1;
-    }
-    ser->sin_family = AF_INET;
-    ser->sin_addr.s_addr = inet_addr(ipAddr);
-    ser->sin_port = htons(portNum);
-
-    return fd;
+    ret = sendto(ser->fd,&flags,sizeof(flags),0,(struct sockaddr *)&cli,len);
+    perror("sendto:");
+    printf("ret %d\n",ret);
+    
+    
 }
 
-void SubsMessage(const char *serverIp)
+int AcceptMessage(struct server *ser,void *msgbuff,int size)
 {
-    int fd = 0;
-    sockelen_t len;
-    struct localNet one;
-    strcpy(one.ipAddr,"127.0.0.1");
+    int ret = 0;
+    printf("start accept:%d\n",ser->flags);
+    if(1)
+        ret = recvfrom(ser->fd,msgbuff,size,0,NULL,NULL);
+    return ret;
+}
+
+void SubsMessage(const char *serverIp,struct server *ser)
+{
+    int ret = 0;
+    struct local one;
+    strcpy(one.ipAddr,"192.168.0.250");
     one.Port = 7245;
-    struct sockaddr_in ser_addr = {0};
-    len = sizeof(ser_addr);
-    fd = CreateOneConnet(SERVER_IP,SERVER_PORT,&ser_addr);
-    if(fd>0){
-        sendto(fd,&one,sizeof(one),&ser_addr,len);
+    one.mflag = 233;
+    sendto(ser->fd,&one,sizeof(one),0,(struct sockaddr *)&ser->svr,ser->len);
+    printf("start recv\n");
+    //recvfrom(ser->fd,&ser->flags,sizeof(ser->flags),0,NULL,NULL);
+    ser->flags=1;
+    printf("%d\n",ser->flags);
+    close(ser->fd);
+    if(ser->flags){
+        InitRec(ser,0);
+        ret = bind(ser->fd,(struct sockaddr *)&ser->svr,ser->len);
+        if(ret == -1){
+            perror("bind");
+        }
     }
-    close(fd);
 }
 
-int main(int argc, char* argv[])
+void InitRec(struct server *ser,int flag)
 {
-    int client_fd;
-    struct sockaddr_in ser_addr = {0};
-    client_fd = CreateOneConnet(SERVER_IP,SERVER_PORT,&ser_addr);
-
-    close(client_fd);
-
-    return 0;
+    ser->svrport = SERVER_PORT;
+    ser->flags = 0;
+    ser->fd = socket(AF_INET,SOCK_DGRAM,0);
+    if(ser->fd < -1){
+        perror("socket");
+        return ;
+    }
+    ser->svr.sin_family = AF_INET;
+    if(flag)
+        ser->svr.sin_addr.s_addr = inet_addr(SERVER_IP);
+    else
+        ser->svr.sin_addr.s_addr = htonl(INADDR_ANY);
+    ser->svr.sin_port = htons(ser->svrport);
+    ser->len = sizeof(ser->svr);
 }
-#endif
