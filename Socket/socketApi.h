@@ -7,18 +7,22 @@
 #include <string.h>
 #include <unistd.h>
 
-struct server{
-    int flags;
+struct sockdes{
+    int flag;
     int fd;
-    int svrport;
-    struct sockaddr_in svr;
+    int port;
+    struct sockaddr_in skaddr;
     socklen_t len;
 };
 
 struct local{
-    int mflag;
-    int Port;
+    int flag;
+    int port;
     char ipAddr[24];
 };
+
+
+void InitServer(struct sockdes *sock,int port);
+void InitClient(struct sockdes *sock,const char *svrip,int port);
 
 #endif
